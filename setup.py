@@ -7,7 +7,8 @@ setup(
     install_requires=[
         'Click',
         'prompt_toolkit',
-        'PyInquirer'
+        'PyInquirer',
+        'pyfiglet'
     ],
     entry_points={
         'console_scripts': [
