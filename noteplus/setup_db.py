@@ -1,6 +1,5 @@
 import sqlite3
 
-# simple test comment
 
 def init_db():
     """Initializes the notes database"""
