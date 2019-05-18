@@ -3,10 +3,11 @@
 
 import click
 
+from pyfiglet import Figlet
+
 from noteplus.commands.add import add
 from noteplus.commands.remove import remove
 from noteplus.commands.retrieve import retrieve
-import noteplus.commands.test as test
 
 from noteplus.setup_db import init_db
 
@@ -23,7 +24,15 @@ def main():
     init_db()
 
 
+@click.command('banner', short_help= 'display noteplus banner')
+def banner():
+    """Display the noteplus banner"""
+
+    b = Figlet(font='slant')
+    click.echo(b.renderText('noteplus'))
+
+
 main.add_command(add)
+main.add_command(banner)
 main.add_command(remove)
 main.add_command(retrieve)
-main.add_command(test)
