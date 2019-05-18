@@ -6,6 +6,8 @@ setup(
     packages=find_packages(exclude=['docs', 'tests*']),
     install_requires=[
         'Click',
+        'prompt_toolkit',
+        'PyInquirer'
     ],
     entry_points={
         'console_scripts': [
