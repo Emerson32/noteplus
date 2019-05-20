@@ -4,6 +4,8 @@ import click
 import datetime
 import sqlite3
 
+from prompt_toolkit import prompt
+from prompt_toolkit.contrib.completers import WordCompleter
 from noteplus.commands.basis import Note
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -22,8 +24,8 @@ def add(editor, text, title):
 
     print(note_title)
     print(note_text)
-    
-    
+
+
 def get_title(title):
     """
     Prompts the user for the title
@@ -31,15 +33,18 @@ def get_title(title):
     :param title: The title parameter
     :return: The title
     """
+
+    title_list = WordCompleter(['Todo', 'Untitled'])
+
     if not title:
-        header = input('Title Name: ')
+        header = prompt('Title: ', completer=title_list)
 
         if not header:
             title = 'Untitled'
 
         else:
             title = header.rstrip()
-            
+
     return title
 
 
@@ -63,7 +68,7 @@ def get_text(ed, txt):
         note = txt
 
     else:
-        note = input('Note: ')
+        note = prompt('Note: ')
 
     if '' == note:
         note = 'Empty Note'
@@ -89,7 +94,8 @@ def add_to_notebook(header, txt):
     new_note = Note(header, txt, time_stamp)
 
     c.execute("INSERT INTO notes VALUES(:title, :note, :time_stamp)",
-              {'title': new_note.title, 'note': new_note.note, 'time_stamp': new_note.time_stamp})
+              {'title': new_note.title, 'note': new_note.note,
+                  'time_stamp': new_note.time_stamp})
 
     conn.commit()
     conn.close()
