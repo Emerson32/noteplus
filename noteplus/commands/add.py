@@ -18,7 +18,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 def add(editor, text, title):
     """Add a new note to the notebook"""
     note_title = get_title(title)
-    note_text = get_text(editor, text)
+    note_text = get_text(editor, title, text)
 
     add_to_notebook(note_title, note_text)
 
@@ -48,7 +48,7 @@ def get_title(title):
     return title
 
 
-def get_text(ed, txt):
+def get_text(ed, title, txt):
     """
     Prompts the user for the note text
     :rtype: str
