@@ -2,6 +2,8 @@
 # Entry point of the noteplus cli application
 
 import click
+import sys
+
 
 from pyfiglet import Figlet
 
@@ -16,23 +18,23 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
 @click.version_option(version='1.0.0', prog_name='noteplus')
-@click.group(context_settings=CONTEXT_SETTINGS)
-def main():
+@click.group(invoke_without_command=True, context_settings=CONTEXT_SETTINGS)
+@click.option('-b', '--banner', 'banner', is_flag=True, help='display the banner')
+@click.option('-i', '--interactive', 'interactive', is_flag=True, help='interactive mode')
+def main(banner):
     """Simple note-taking utility"""
 
     # Create the notes database if non-existent
     init_db()
 
+    if len(sys.argv) == 1:
+        raise click.UsageError('Missing option or subcommand')
 
-@click.command('banner', short_help= 'display noteplus banner')
-def banner():
-    """Display the noteplus banner"""
-
-    b = Figlet(font='slant')
-    click.echo(b.renderText('noteplus'))
+    if banner:
+        b = Figlet(font='slant')
+        click.echo(b.renderText('noteplus'))
 
 
 main.add_command(add)
-main.add_command(banner)
 main.add_command(remove)
 main.add_command(retrieve)
