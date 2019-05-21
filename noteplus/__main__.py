@@ -2,17 +2,17 @@
 # Entry point of the noteplus cli application
 
 import click
+import npyscreen
 import sys
 
 from pyfiglet import Figlet
-from PyInquirer import prompt
 
 from noteplus.commands.add import add
 from noteplus.commands.remove import remove
 from noteplus.commands.retrieve import retrieve
 
 from noteplus.setup_db import init_db
-from noteplus.interactive_mode import interactive_handler
+from noteplus.interactive import NotePlusApp
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -36,9 +36,7 @@ def main(banner, interactive):
         click.echo(b.renderText('noteplus'))
 
     if interactive:
-        b = Figlet(font='slant')
-        click.echo(b.renderText('noteplus'))
-        main_selection = interactive_handler()
+        NotePlusApp().run()
 
 
 main.add_command(add)
