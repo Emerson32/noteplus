@@ -8,7 +8,8 @@ setup(
         'Click',
         'prompt_toolkit',
         'PyInquirer',
-        'pyfiglet'
+        'pyfiglet',
+        'npyscreen'
     ],
     entry_points={
         'console_scripts': [
