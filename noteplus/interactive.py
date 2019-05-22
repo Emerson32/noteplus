@@ -2,6 +2,12 @@ import npyscreen
 
 
 class mainMenuForm(npyscreen.ActionForm):
+    def create(self):
+        op_list = ['Create a New Folder', 'Retrieve a Folder', 'Delete a Folder',
+                   'Create a New Note', 'Edit a Note', 'Delete a Note']
+
+        self.selection = self.add(npyscreen.TitleMultiLine, name='Choose One:', values=op_list)
+
     def afterEditing(self):
         self.parentApp.setNextForm(None)
 
@@ -11,12 +17,6 @@ class mainMenuForm(npyscreen.ActionForm):
 
     def on_cancel(self):
         self.editing = False
-
-    def create(self):
-        op_list = ['Create a New Folder', 'Retrieve a Folder', 'Delete a Folder',
-                'Create a New Note', 'Edit a Note', 'Delete a Note']
-
-        self.selection = self.add(npyscreen.TitleMultiLine, name='Choose One:', values=op_list)
 
 
 class NotePlusApp(npyscreen.NPSAppManaged):
