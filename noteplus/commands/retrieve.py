@@ -10,9 +10,9 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.command('retrieve', context_settings=CONTEXT_SETTINGS, short_help='retrieve note entries')
 @click.option('-a', '--all', 'all_notes', is_flag=True, help='retrieve all note entries')
 @click.option('-l', '--less', 'less', is_flag=True, help='show note(s) by using a pager')
-@click.option('-t', '--title', 'note_title', nargs=1, type=str, help='retrieve a note based on its title')
+@click.option('-t', '--title', 'title', nargs=1, type=str, help='retrieve a note based on its title')
 @click.option('-n', '--note', 'note', nargs=1, type=str, help='retrieve a note based on the note')
-def retrieve(all_notes, less, note_title, note):
+def retrieve(all_notes, less, title, note):
     """Retrieve a note from the notebook"""
     conn = sqlite3.connect('notes.db')
     c = conn.cursor()
@@ -40,9 +40,9 @@ def retrieve(all_notes, less, note_title, note):
                 click.echo('Note: ' + item[1])
                 click.echo('Time: ' + item[2])
 
-    elif note_title:
+    elif title:
         with conn:
-            c.execute("SELECT * FROM notes WHERE title=:title", {'title': note_title})
+            c.execute("SELECT * FROM notes WHERE title=:title", {'title': title})
 
         results = c.fetchall()
         for item in results:

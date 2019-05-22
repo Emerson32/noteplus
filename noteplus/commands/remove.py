@@ -1,9 +1,8 @@
 # remove.py - Remove a note from the notebook
 
 import click
-import sqlite3
 
-from noteplus.commands.basis import Note
+from noteplus.commands.operations import remove_note
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -13,4 +12,4 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.argument('title', required=False, default=None, type=str)
 def remove(purge, title):
     """Remove a note from the database"""
-    Note.remove(purge=purge, title=title)
+    remove_note(purge=purge, title=title)
