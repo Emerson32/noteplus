@@ -15,9 +15,9 @@ class Note:
                '\nTime Stamp: ' + self.time_stamp + '\n'
 
 
-class Folder:
-    """Folder class"""
-    def __init__(self, name, path, date_created):
-        self.name = name
-        self.path = path
-        self.date_created = date_created
+# class Folder:
+#     """Folder class"""
+#     def __init__(self, name, path, date_created):
+#         self.name = name
+#         self.path = path
+#         self.date_created = date_created
