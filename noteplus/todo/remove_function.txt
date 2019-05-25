@@ -1,0 +1,2 @@
+1.  Implement an interactive menu for the cases when multiple notes
+    have the same title
