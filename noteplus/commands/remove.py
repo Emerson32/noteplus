@@ -43,5 +43,5 @@ def remove(clean, purge, folder, title):
 # Print out removed notes
     click.echo()
     for item in removed_notes:
-        click.secho("Removed: ", bold=True, fg='cyan', nl=False)
-        click.secho(item[0], underline=True)
+        click.secho("Removed: ", bold=True, nl=False)
+        click.secho(item[0], fg='red', underline=True)
