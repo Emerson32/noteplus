@@ -11,7 +11,8 @@ class Note:
         self.time_stamp = time_stamp
 
     def to_string(self):
-        return 'Location: ' + self.path + '\nTitle: ' + self.title + '\nNote: ' + self.note +\
+        return 'Location: ' + self.path + '\nTitle: ' + self.title + \
+                '\nNote: ' + self.note + \
                '\nTime Stamp: ' + self.time_stamp + '\n'
 
 
