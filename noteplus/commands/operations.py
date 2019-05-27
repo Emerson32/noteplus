@@ -46,9 +46,9 @@ def add_note(editor, title, text, path):
     Add a note to the database
 
     :param editor: Visual editor flag
-    :param path: Destination of new note
     :param title: Title of the note to be added
     :param text: Text of the note to be added
+    :param path: Destination of new note
     """
     note_title = __get_title(title)
     note_text = __get_text(editor, text)
@@ -165,7 +165,6 @@ def remove_note(title):
     Remove a note
 
     :rtype: str
-    :param purge: Remove all entries in the database
     :param title: Title of the note to be removed
     :return: Note entry removed. None is returned if note is not found
     """
@@ -193,7 +192,64 @@ def remove_note(title):
     return removed
 
 
-def edit_note():
+def rename_title(old_title, new_title):
     """
     Allows the user to edit a note in the current folder.
     """
+    conn = sqlite3.connect('notes.db')
+    c = conn.cursor()
+
+    with conn:
+        c.execute('SELECT * FROM notes WHERE title=:title',
+                  {'title': old_title})
+
+        results = c.fetchall()
+
+        if len(results) == 0:
+            raise click.UsageError('No such note with that title')
+        elif len(results) > 1:
+            # Present user with menu to choose a note
+            pass
+        else:
+            # Update one entry with the new title
+            with conn:
+                c.execute('''UPDATE notes set title= ?
+                          WHERE title= ? ''',
+                          (new_title, old_title))
+
+
+def edit_note(note_title):
+    if not os.path.isfile('notes.db'):
+        raise click.UsageError('Notes file non-existent. \
+                                \n       See noteplus add.\v')
+
+    conn = sqlite3.connect('notes.db')
+    c = conn.cursor()
+
+    with conn:
+        c.execute('SELECT * from notes WHERE title=:title',
+                  {'title': note_title})
+
+    results = c.fetchall()
+
+    if len(results) == 0:
+        raise click.UsageError('No such note with that title')
+    elif len(results) > 1:
+        # Present user with menu to choose a note
+        pass
+    else:
+        target_note = results[0]
+        new_txt = click.edit(target_note[1])
+
+        if not new_txt:
+            new_txt = note_title
+
+        with conn:
+            c.execute('''UPDATE notes set note=?
+                       WHERE title=?''',
+                      (new_txt, note_title))
+
+
+
+
+
