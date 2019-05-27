@@ -14,9 +14,9 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-l', '--less', 'less', is_flag=True,
               help='show note(s) by using a pager')
 @click.option('-t', '--title', 'title', nargs=1, type=str,
-        help='retrieve a note based on its title')
+              help='retrieve a note based on its title')
 @click.option('-n', '--note', 'note', nargs=1, type=str,
-        help='retrieve a note based on the note')
+              help='retrieve a note based on the note')
 def retrieve(all_notes, less, title, note):
     """Retrieve a note from the notebook"""
     conn = sqlite3.connect('notes.db')
