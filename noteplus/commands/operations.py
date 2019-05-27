@@ -11,30 +11,34 @@ from noteplus.setup_db import init_db
 from noteplus.commands.basis import Note
 
 
-def add_folder(path):
-    abs_path = os.path.join(os.getcwd(), path)
+def add_folder(folder_name, path):
+    if path != os.getcwd:
+        path = os.path.join(path, folder_name)
 
-    if os.path.exists(abs_path):
+    if os.path.exists(path):
         raise click.UsageError('Folder already exists')
 
     try:
-        os.mkdir(abs_path)
+        os.makedirs(path)
 
     except FileNotFoundError:
         click.UsageError('No such file or directory')
 
-    return abs_path
-
 
 def remove_folder(path):
-    if len(os.listdir()) == 0:
-        os.rmdir(path)
+    abs_path = os.path.join(os.getcwd(), path)
+
+    if not os.path.exists(abs_path):
+        raise click.UsageError('No such file or directory')
+
+    # Current folder is empty
+    if len(os.listdir(abs_path)) == 0:
+        os.rmdir(abs_path)
+
     else:
-        shutil.rmtree(path)
+        shutil.rmtree(abs_path)
 
-
-def navigate(path):
-    os.chdir(path)
+    return abs_path
 
 
 def add_note(editor, title, text, path):
@@ -124,31 +128,72 @@ def __get_text(ed, txt):
     return note
 
 
-def remove_note(purge, title):
-    """
-    Remove a note
+def clean_notes():
+    if not os.path.isfile('notes.db'):
+        raise click.UsageError('Notes file non-existent')
 
-    :param purge: Remove all entries in the database
-    :param title: Title of the note to be removed
-    """
     conn = sqlite3.connect('notes.db')
     c = conn.cursor()
 
-    if purge:
-        with conn:
-            c.execute('DELETE from notes')
+    with conn:
+        c.execute('SELECT * from notes')
+        removed = c.fetchall()
+        c.execute('DELETE from notes')
 
-    elif title:
-        with conn:
+    return removed
+
+
+def purge_notes():
+    if not os.path.isfile('notes.db'):
+        raise click.UsageError('Notes file non-existent')
+
+    conn = sqlite3.connect('notes.db')
+    c = conn.cursor()
+
+    c.execute('SELECT * from notes')
+    removed = c.fetchall()
+
+    click.secho("Removed: ", bold=True, fg='magenta', nl=False)
+    click.secho((os.path.join(os.getcwd(), 'notes.db')), underline=True)
+    os.remove('notes.db')
+
+    return removed
+
+
+def remove_note(title):
+    """
+    Remove a note
+
+    :rtype: str
+    :param purge: Remove all entries in the database
+    :param title: Title of the note to be removed
+    :return: Note entry removed. None is returned if note is not found
+    """
+    if not os.path.isfile('notes.db'):
+        raise click.UsageError('Notes file non-existent. \
+                                \n       See noteplus add.\v')
+
+    conn = sqlite3.connect('notes.db')
+    c = conn.cursor()
+
+    with conn:
+        c.execute('SELECT * from notes WHERE title=:title',
+                  {'title': title})
+        removed = c.fetchall()
+
+        if len(removed) == 0:
+            raise click.UsageError('No such note with that title')
+        elif len(removed) > 1:
+            # Present user with menu to choose a note
+            pass
+        else:
             c.execute('DELETE from notes WHERE title=:title',
-                    {'title': title})
+                      {'title': title})
 
-    else:
-        raise click.UsageError('Missing option or argument')
+    return removed
 
 
 def edit_note():
     """
     Allows the user to edit a note in the current folder.
-    :return:
     """
