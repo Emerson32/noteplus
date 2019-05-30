@@ -1,4 +1,6 @@
 import npyscreen
+from noteplus.selection import Selection
+from noteplus.commands.operations import purge_notes
 
 
 class mainMenuForm(npyscreen.ActionForm):
@@ -12,8 +14,12 @@ class mainMenuForm(npyscreen.ActionForm):
         self.parentApp.setNextForm(None)
 
     def on_ok(self):
+        # selection = Selection(self.selection.value)
+
+        if self.selection.value == 5:
+            purge_notes()
+
         self.editing = False
-        self.set_value(self.selection)
 
     def on_cancel(self):
         self.editing = False
