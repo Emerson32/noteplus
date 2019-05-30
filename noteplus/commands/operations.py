@@ -7,7 +7,6 @@ import sqlite3
 from prompt_toolkit import prompt
 from prompt_toolkit.contrib.completers import WordCompleter
 
-from noteplus.setup_db import init_db
 from noteplus.commands.basis import Note
 
 
@@ -77,7 +76,7 @@ def add_note(editor, title, text, path):
     return new_note
 
 
-def __get_title(title):
+def get_title(title):
     """
     Prompts the user for the title
     :rtype: str
@@ -99,24 +98,24 @@ def __get_title(title):
     return title
 
 
-def __get_text(ed, txt):
+def get_text(editor, text):
     """
     Prompts the user for the note text
     :rtype: str
-    :param ed: visual editor flag
-    :param txt: note text
+    :param editor: visual editor flag
+    :param text: note text
     :return: potentially modified note text
     """
 
     # Visual editor option selected and text provided via command line
-    if ed:
+    if editor:
         note = click.edit()
 
         if note is None:
             note = ''
 
-    elif txt:
-        note = txt
+    elif text:
+        note = text
 
     else:
         note = prompt('Note: ')
