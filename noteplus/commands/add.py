@@ -33,6 +33,12 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.argument('text', required=False, default='', type=str)
 def add(editor, subject, notebook, note, path, title, text):
     """Add a new note to the notebook"""
+    # First handle the provided path
+    if not os.path.exists(path):
+        raise click.UsageError('No such file or directory')
+
+    else:
+        os.chdir(path)
 
     if subject and note:
         # Create the folder with the given path.
