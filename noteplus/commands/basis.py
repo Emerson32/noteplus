@@ -6,6 +6,9 @@ import os
 import shutil
 import sqlite3
 
+from prompt_toolkit import prompt
+from prompt_toolkit.contrib.completers import WordCompleter
+
 
 class NoteBook:
     """Class representing note database"""
@@ -201,6 +204,46 @@ class Note:
 
     def get_timestamp(self):
         return self.time_stamp
+
+    def set_title(self, title):
+        """
+            Prompts the user for the title
+            :param title: The title parameter
+            """
+
+        title_list = WordCompleter(['Todo', 'Untitled'])
+
+        if not title:
+            header = prompt('Title: ', completer=title_list)
+
+            if not header:
+                self.title = 'Untitled'
+
+            else:
+                self.title = header.rstrip()
+
+    def set_text(self, editor, text):
+        """
+            Prompts the user for the note text
+            :param editor: visual editor flag
+            :param text: note text
+            """
+
+        # Visual editor option selected and text provided via command line
+        if editor:
+            self.text = click.edit()
+
+            if self.text is None:
+                self.text = ''
+
+        elif text:
+            self.text = text
+
+        else:
+            self.text = prompt('Note: ')
+
+        if '' == self.text:
+            self.text = 'Empty Note'
 
     def to_string(self):
         return '\nLocation: ' + self.path + '\n\nTitle: ' + self.title \

@@ -7,7 +7,6 @@ from noteplus.commands.basis import NoteBook
 from noteplus.commands.basis import Note
 from noteplus.commands.basis import Subject
 
-from noteplus.commands.operations import get_title, get_text
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -55,9 +54,9 @@ def add(editor, subject, notebook, note, path, title, text):
         if not os.path.exists(file_path):
             raise click.UsageError('No such file or directory')
 
-        note_title = get_title(title=title)
-        note_text = get_text(editor=editor, text=text)
-        new_note = Note(title=note_title, text=note_text, path=file_path)
+        new_note = Note(title='', text='', path=file_path)
+        new_note.set_title(title=title)
+        new_note.set_text(editor=editor, text=text)
 
         # Must change to the desired directory before initialization
         os.chdir(file_path)
@@ -72,9 +71,9 @@ def add(editor, subject, notebook, note, path, title, text):
         new_dir.create()
 
     elif note:
-        note_title = get_title(title=title)
-        note_text = get_text(editor=editor, text=text)
-        new_note = Note(title=note_title, text=note_text, path=path)
+        new_note = Note(title='', text='', path=path)
+        new_note.set_title(title=title)
+        new_note.set_text(editor=editor, text=text)
 
         note_book = NoteBook(path=path, file_name=notebook)
         note_book.add(new_note)
