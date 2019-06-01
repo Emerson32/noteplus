@@ -95,6 +95,22 @@ class NoteBook:
 
         return removed
 
+    def retrieve_all(nb_name):
+
+        conn = sqlite3.connect(nb_name)
+        c = conn.cursor()
+
+        with conn:
+            c.execute('SELECT * FROM notes')
+
+        results = c.fetchall()
+
+        # Pager option selected
+        if less:
+            lines=''
+
+
+
     def to_string(self):
         return 'Location: ' + self.path + '\nFile Name: ' + self.dbfilename
 
@@ -120,7 +136,7 @@ class Note:
         return self.time_stamp
 
     def to_string(self):
-        return 'Location: ' + self.path + '\nTitle: ' + self.title \
+        return '\nLocation: ' + self.path + '\n\nTitle: ' + self.title \
                 + '\nNote: ' + self.text + '\nDate: ' + self.time_stamp
 
 

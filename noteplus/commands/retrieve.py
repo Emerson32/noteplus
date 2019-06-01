@@ -1,7 +1,11 @@
 # retrieve.py - Returns a list of note entries within the database
 
 import click
+import os
 import sqlite3
+
+from noteplus.commands.basis import Note
+from notelpus.commands.basis import NoteBook
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -17,14 +21,29 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               help='retrieve a note based on its title')
 @click.option('-n', '--note', 'note', nargs=1, type=str,
               help='retrieve a note based on the note')
-def retrieve(all_notes, less, title, note):
+@click.option('-nb', '--notebook', 'notebook', nargs=1,
+              type=str, default='notes.db',
+              help='Name of notebook file')
+@click.option('-p', '--path', 'path', nargs=1,
+              type=click.Path(readable=True),
+              default=lambda: os.environ.get('PWD', ''),
+              help='Specific directory of note retrieval')
+def retrieve(all_notes, less, title, note, notebook, path):
     """Retrieve a note from the notebook"""
-    conn = sqlite3.connect('notes.db')
-    c = conn.cursor()
+
+    if not os.path.isfile(notebook):
+        raise click.UsageError('Notes file does not exist'
+                               + ' within the provided path')
+
+    if not os.path.exists(path):
+        raise click.UsageError('No such file or directory')
+
+    target_nb = NoteBook(path=path, file_name=notebook)
 
     if all_notes:
-        with conn:
-            c.execute('SELECT * FROM notes')
+
+        target_nb.retrieve_all(notebook)
+
 
         results = c.fetchall()
 
