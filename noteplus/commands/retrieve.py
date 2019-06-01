@@ -21,6 +21,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               help='retrieve a note based on the note')
 @click.option('-nb', '--notebook', 'notebook', nargs=1,
               type=str, default='notes.db',
+              show_default=True,
               help='Name of notebook file')
 @click.option('-p', '--path', 'path', nargs=1,
               type=click.Path(readable=True),
@@ -30,8 +31,9 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 def retrieve(all_notes, less, title, note, notebook, path):
     """Retrieve a note from the notebook"""
 
-    if not os.path.isfile(notebook):
-        raise click.UsageError('Notes file does not exist'
+    if not os.path.isfile(os.path.join(path, notebook)):
+        raise click.UsageError('Notes file named: '
+                               + notebook + ' does not exist'
                                + ' within the provided path')
 
     if not os.path.exists(path):
@@ -85,4 +87,4 @@ def retrieve(all_notes, less, title, note, notebook, path):
             click.echo('Time: ' + item[2])
 
     else:
-        raise click.UsageError('Missing option')
+        raise click.UsageError('Missing necessary retrieval option')
