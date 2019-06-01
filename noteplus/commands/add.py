@@ -67,7 +67,7 @@ def add(editor, subject, notebook, note, path, title, text):
     elif note:
         note_title = get_title(title=title)
         note_text = get_text(editor=editor, text=text)
-        new_note = Note(title=note_title, text=note_text)
+        new_note = Note(title=note_title, text=note_text, path=path)
 
         note_book = NoteBook(path=path, file_name=notebook)
         note_book.add(new_note)
