@@ -128,6 +128,56 @@ class NoteBook:
         results = c.fetchall()
         return results
 
+    def rename(self, old_title, new_title):
+        conn = sqlite3.connect(self.dbfilename)
+        c = conn.cursor()
+
+        with conn:
+            c.execute('SELECT * FROM notes WHERE title=:title',
+                      {'title': old_title})
+
+            results = c.fetchall()
+
+        if len(results) == 0:
+            raise click.UsageError('No such note with that title')
+        elif len(results) > 1:
+            # Present user with menu to choose a note
+            pass
+        else:
+            # Update one entry with the new title
+            with conn:
+                c.execute('''UPDATE notes set title= ?
+                          WHERE title= ? ''',
+                          (new_title, old_title))
+
+    def edit(self, note_title):
+
+        conn = sqlite3.connect(self.dbfilename)
+        c = conn.cursor()
+
+        with conn:
+            c.execute('SELECT * from notes WHERE title=:title',
+                      {'title': note_title})
+
+        results = c.fetchall()
+
+        if len(results) == 0:
+            raise click.UsageError('No such note with that title')
+        elif len(results) > 1:
+            # Present user with menu to choose a note
+            pass
+        else:
+            target_note = results[0]
+            new_txt = click.edit(target_note[1])
+
+            if not new_txt:
+                new_txt = note_title
+
+            with conn:
+                c.execute('''UPDATE notes set note=?
+                           WHERE title=?''',
+                          (new_txt, note_title))
+
     def to_string(self):
         return 'Location: ' + self.path + '\nFile Name: ' + self.dbfilename
 

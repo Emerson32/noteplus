@@ -2,7 +2,7 @@
 import click
 import os
 
-from noteplus.commands.operations import rename_title, edit_note
+from noteplus.commands.basis import NoteBook
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -15,9 +15,18 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-n', '--note', 'note',
               nargs=1, type=str,
               help='edit the text of a given note entry (arg = title)')
+@click.option('-nb', '--notebook', 'notebook', nargs=1,
+              type=str, default='notes.db',
+              show_default=True,
+              help='Name of notes file to edit')
+@click.option('-p', '--path', 'path', nargs=1,
+              type=click.Path(writable=True),
+              default=lambda: os.environ.get('PWD', ''),
+              show_default='current directory',
+              help='Specific path for desired notes file')
 @click.argument('old_title', required=False, type=str)
 @click.argument('new_title', required=False, type=str)
-def edit(rename_type, note, old_title, new_title):
+def edit(rename_type, note, path, notebook, old_title, new_title):
     """Make changes to a note or folder"""
     if rename_type:
         if not (old_title or new_title):
@@ -34,7 +43,14 @@ def edit(rename_type, note, old_title, new_title):
             click.secho(new_dir, bold=True, fg='green')
 
         else:
-            rename_title(old_title=old_title, new_title=new_title)
+            if not os.path.isfile(os.path.join(path, notebook)):
+                raise click.UsageError('Notes file named: '
+                                       + notebook + ' does not exist'
+                                       + ' within the provided path')
+
+            note_book = NoteBook(path=path, file_name=notebook)
+
+            note_book.rename(old_title=old_title, new_title=new_title)
             old_file = os.path.join(os.getcwd(), old_title)
             new_file = os.path.join(os.getcwd(), new_title)
 
@@ -44,4 +60,13 @@ def edit(rename_type, note, old_title, new_title):
             click.secho(new_file, bold=True, fg='green')
 
     elif note:
-        edit_note(note_title=note)
+        if not os.path.isfile(os.path.join(path, notebook)):
+            raise click.UsageError('Notes file named: '
+                                   + notebook + ' does not exist'
+                                   + ' within the provided path')
+
+        note_book = NoteBook(path=path, file_name=notebook)
+        note_book.edit(note_title=note)
+
+    else:
+        raise click.UsageError('Missing option')
