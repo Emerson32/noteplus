@@ -25,10 +25,10 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-n', '--note', 'note', is_flag=True,
               help='Add a new note entry')
 @click.option('-p', '--path', 'path',
+              type=click.Path(writable=True),
               default=lambda: os.environ.get('PWD', ''),
               show_default='current directory',
-              type=click.Path(writable=True),
-              help='Specified path')
+              help='Specific path to insert notes file')
 @click.argument('title', required=False, default='', type=str)
 @click.argument('text', required=False, default='', type=str)
 def add(editor, subject, notebook, note, path, title, text):
