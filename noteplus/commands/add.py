@@ -15,15 +15,16 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.command('add', context_settings=CONTEXT_SETTINGS,
                short_help='Add notes and/or folders')
 @click.option('-e', '--editor', 'editor', is_flag=True,
-              help='Use buffer to enter note')
+              type=bool, help='Use buffer to enter note')
 @click.option('-s', '--subject', 'subject', nargs=1,
               type=click.Path(writable=True),
               help='Create a new subject')
 @click.option('-nb', '--notebook', 'notebook', nargs=1,
               type=str, default='notes.db',
-              help='Specify the name of a notebook (default = notes.db)')
+              show_default=True,
+              help='Specify the name of a notebook')
 @click.option('-n', '--note', 'note', is_flag=True,
-              help='Add a new note entry')
+              type=bool, help='Add a new note entry')
 @click.option('-p', '--path', 'path',
               type=click.Path(writable=True),
               default=lambda: os.environ.get('PWD', ''),

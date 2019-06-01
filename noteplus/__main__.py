@@ -20,11 +20,13 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
 @click.version_option(version='1.0.0', prog_name='noteplus')
-@click.group(invoke_without_command=True, context_settings=CONTEXT_SETTINGS)
+@click.group(invoke_without_command=True,
+             context_settings=CONTEXT_SETTINGS)
 @click.option('-b', '--banner', 'banner', is_flag=True,
-              help='display the banner')
+              type=bool, help='display the banner')
 @click.option('-i', '--interactive', 'interactive',
-              is_flag=True, help='interactive mode')
+              is_flag=True, type=bool,
+              help='interactive mode')
 def main(banner, interactive):
     """Simple note-taking utility"""
 
