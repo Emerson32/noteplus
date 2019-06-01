@@ -95,21 +95,38 @@ class NoteBook:
 
         return removed
 
-    def retrieve_all(nb_name):
+    def retrieve_all(self):
 
-        conn = sqlite3.connect(nb_name)
+        conn = sqlite3.connect(self.dbfilename)
         c = conn.cursor()
 
         with conn:
             c.execute('SELECT * FROM notes')
 
         results = c.fetchall()
+        return results
 
-        # Pager option selected
-        if less:
-            lines=''
+    def retrieve_by_title(self, title):
+        conn = sqlite3.connect(self.dbfilename)
+        c = conn.cursor()
 
+        with conn:
+            c.execute('SELECT * FROM notes WHERE title=:title',
+                      {'title': title})
 
+        results = c.fetchall()
+        return results
+
+    def retrieve_by_note(self, note):
+        conn = sqlite3.connect(self.dbfilename)
+        c = conn.cursor()
+
+        with conn:
+            c.execute('Select * FROM notes WHERE note=:note',
+                      {'note': note})
+
+        results = c.fetchall()
+        return results
 
     def to_string(self):
         return 'Location: ' + self.path + '\nFile Name: ' + self.dbfilename

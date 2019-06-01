@@ -2,10 +2,8 @@
 
 import click
 import os
-import sqlite3
 
-from noteplus.commands.basis import Note
-from notelpus.commands.basis import NoteBook
+from noteplus.commands.basis import NoteBook
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -27,6 +25,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-p', '--path', 'path', nargs=1,
               type=click.Path(readable=True),
               default=lambda: os.environ.get('PWD', ''),
+              show_default='current directory',
               help='Specific directory of note retrieval')
 def retrieve(all_notes, less, title, note, notebook, path):
     """Retrieve a note from the notebook"""
@@ -41,11 +40,9 @@ def retrieve(all_notes, less, title, note, notebook, path):
     target_nb = NoteBook(path=path, file_name=notebook)
 
     if all_notes:
+        os.chdir(path)
 
-        target_nb.retrieve_all(notebook)
-
-
-        results = c.fetchall()
+        results = target_nb.retrieve_all()
 
         # Less pager selected
         if less:
@@ -67,11 +64,9 @@ def retrieve(all_notes, less, title, note, notebook, path):
                 click.echo('Time: ' + item[2])
 
     elif title:
-        with conn:
-            c.execute('SELECT * FROM notes WHERE title=:title',
-                      {'title': title})
+        os.chdir(path)
 
-        results = c.fetchall()
+        results = target_nb.retrieve_by_title(title=title)
         for item in results:
             click.echo()
             click.echo('Title: ' + item[0])
@@ -79,11 +74,10 @@ def retrieve(all_notes, less, title, note, notebook, path):
             click.echo('Time: ' + item[2])
 
     elif note:
-        with conn:
-            c.execute('Select * FROM notes WHERE note=:note',
-                      {'note': note})
+        os.chdir(path)
 
-        results = c.fetchall()
+        results = target_nb.retrieve_by_note(note=note)
+
         for item in results:
             click.echo()
             click.echo('Title: ' + item[0])

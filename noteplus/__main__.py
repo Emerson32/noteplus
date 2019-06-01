@@ -10,7 +10,7 @@ from pyfiglet import Figlet
 from noteplus.commands.add import add
 # from noteplus.commands.edit import edit
 from noteplus.commands.remove import remove
-# from noteplus.commands.retrieve import retrieve
+from noteplus.commands.retrieve import retrieve
 
 
 from noteplus.interactive import NotePlusApp
@@ -42,4 +42,4 @@ def main(banner, interactive):
 main.add_command(add)
 # main.add_command(edit)
 main.add_command(remove)
-# main.add_command(retrieve)
+main.add_command(retrieve)
