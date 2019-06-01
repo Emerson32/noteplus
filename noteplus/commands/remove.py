@@ -30,9 +30,8 @@ def remove(clean, purge, subject, nb_title):
 
     if subject:
         # TODO: Correct the name of the removed directory
-        subject_name = subject
-        subj = Subject(path=subject, name=os.path.basename(subject_name))
-        click.echo(subj.name)
+        subject_name = os.path.basename(subject.rstrip('/'))
+        subj = Subject(path=subject, name=subject_name)
         removed_subject = subj.remove()
         click.echo("Removed: " + removed_subject)
 
@@ -44,7 +43,7 @@ def remove(clean, purge, subject, nb_title):
                 removed_notes = note_book.clean_notes()
 
         if purge:
-            if click.confirm('\nRemove notes.db?'):
+            if click.confirm('\nRemove notes file?'):
                 removed_notes = note_book.purge_notes()
 
 # Print out removed notes
@@ -52,3 +51,5 @@ def remove(clean, purge, subject, nb_title):
     for item in removed_notes:
         click.secho("Removed: ", bold=True, nl=False)
         click.secho(item[0], fg='red', underline=True)
+    
+    click.echo()
