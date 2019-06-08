@@ -3,9 +3,6 @@
 import click
 import os
 
-from noteplus.commands.operations import remove_note, remove_folder
-from noteplus.commands.operations import clean_notes, purge_notes
-
 from noteplus.commands.basis import NoteBook
 from noteplus.commands.basis import Subject
 

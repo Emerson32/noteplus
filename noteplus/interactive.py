@@ -1,6 +1,5 @@
 import npyscreen
 from noteplus.selection import Selection
-from noteplus.commands.operations import purge_notes
 
 
 class mainMenuForm(npyscreen.ActionForm):
