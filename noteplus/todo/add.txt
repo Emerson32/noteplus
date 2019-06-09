@@ -1,0 +1,3 @@
+1. Replace title and text prompt with a single option
+   which takes two arguments (title, text).
+   Handle omission appropriately.
