@@ -26,9 +26,9 @@ def remove(clean, purge, subject, nb_title):
     removed_notes = []
 
     if subject:
-        # TODO: Correct the name of the removed directory
         subject_name = os.path.basename(subject.rstrip('/'))
-        subj = Subject(path=subject, name=subject_name)
+        abs_path = os.path.join(os.getcwd(), subject)
+        subj = Subject(path=abs_path, name=subject_name)
         removed_subject = subj.remove()
         click.echo("Removed: " + removed_subject)
 

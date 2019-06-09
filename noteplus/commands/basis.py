@@ -38,6 +38,7 @@ class NoteBook:
                        'time_stamp': note.get_timestamp()})
 
     def clean_notes(self):
+
         if not os.path.isfile(self.dbfilename):
             raise click.UsageError('Notes file non-existent')
 
