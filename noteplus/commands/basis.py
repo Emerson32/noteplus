@@ -22,7 +22,7 @@ class NoteBook:
         with conn:
             c.execute("""CREATE TABLE IF NOT EXISTS notes (
                             title text,
-                            note text,
+                            note_entry text,
                             time_stamp text
                             )""")
             conn.commit()
@@ -33,8 +33,8 @@ class NoteBook:
         c = conn.cursor()
 
         with conn:
-            c.execute("INSERT INTO notes VALUES(:title, :note, :time_stamp)",
-                      {'title': note.get_title(), 'note': note.get_text(),
+            c.execute("INSERT INTO notes VALUES(:title, :note_entry, :time_stamp)",
+                      {'title': note.get_title(), 'note_entry': note.get_text(),
                        'time_stamp': note.get_timestamp()})
 
     def clean_notes(self):
@@ -198,17 +198,18 @@ class Note:
         self.time_stamp = stamp
 
     def get_title(self):
-        return self.title
+        return str(self.title)
 
     def get_text(self):
-        return self.text
+        return str(self.text)
 
     def get_timestamp(self):
-        return self.time_stamp
+        return str(self.time_stamp)
 
     def set_title(self, title):
         """
             Prompts the user for the title
+            :param note: Note object
             :param title: The title parameter
             """
 
@@ -222,6 +223,8 @@ class Note:
 
             else:
                 self.title = header.rstrip()
+        else:
+            self.title = title
 
     def set_text(self, editor, text):
         """

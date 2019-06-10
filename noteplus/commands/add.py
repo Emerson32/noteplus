@@ -22,16 +22,15 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               type=str, default='notes.db',
               show_default=True,
               help='Specify the name of a notebook')
-@click.option('-n', '--note', 'note', is_flag=True,
-              type=bool, help='Add a new note entry')
+@click.option('-n', '--note', 'note', nargs=2,
+              type=str, default='',
+              help='Add a new note entry')
 @click.option('-p', '--path', 'path',
               type=click.Path(writable=True),
               default=lambda: os.environ.get('PWD', ''),
               show_default='current directory',
               help='Specific path to insert notes file')
-@click.argument('title', required=False, default='', type=str)
-@click.argument('text', required=False, default='', type=str)
-def add(editor, subject, notebook, note, path, title, text):
+def add(editor, subject, notebook, note, path):
     """Add a new note to the notebook"""
     # First handle the provided path
     if not os.path.exists(path):
@@ -55,8 +54,8 @@ def add(editor, subject, notebook, note, path, title, text):
             raise click.UsageError('No such file or directory')
 
         new_note = Note(title='', text='', path=file_path)
-        new_note.set_title(title=title)
-        new_note.set_text(editor=editor, text=text)
+        new_note.set_title(title=note[0])
+        new_note.set_text(editor=editor, text=note[1])
 
         # Must change to the desired directory before initialization
         os.chdir(file_path)
@@ -71,11 +70,13 @@ def add(editor, subject, notebook, note, path, title, text):
         new_dir.create()
 
     elif note:
-        new_note = Note(title='', text='', path=path)
-        new_note.set_title(title=title)
-        new_note.set_text(editor=editor, text=text)
 
         note_book = NoteBook(path=path, file_name=notebook)
+
+        new_note = Note(title='', text='', path=path)
+        new_note.set_title(title=note[0])
+        new_note.set_text(editor=editor, text=note[1])
+
         note_book.add(new_note)
 
         click.secho(new_note.to_string(), fg='green')
