@@ -1,8 +1,7 @@
 import npyscreen
-from noteplus.selection import Selection
 
 
-class mainMenuForm(npyscreen.ActionForm):
+class MainMenuForm(npyscreen.ActionForm):
     def create(self):
         op_list = ['Create a New Folder', 'Retrieve a Folder', 'Delete a Folder',
                    'Create a New Note', 'Edit a Note', 'Delete a Note']

@@ -52,18 +52,21 @@ def retrieve(all_notes, less, title, note, notebook, path):
 
             # Build the lines to be displayed
             for item in results:
-                lines += 'Title: ' + item[0] + \
-                         '\nNote: ' + item[1] + \
-                         '\nTime: ' + item[2] + '\n\n'
+                lines += "Title: " + item[0] + \
+                         "\nNote: " + item[1] + \
+                         "\nTime: " + item[2] + "\n\n"
 
             click.echo_via_pager(lines)
 
         else:
             for item in results:
                 click.echo()
-                click.echo('Title: ' + item[0])
-                click.echo('Note: ' + item[1])
-                click.echo('Time: ' + item[2])
+                click.echo("Title: ", nl=False)
+                click.secho(item[0], bold=True)
+                click.echo("Note: ", nl=False)
+                click.secho(item[1], bold=True)
+                click.echo("Time: ", nl=False)
+                click.secho(item[2], bold=True)
 
     elif title:
         os.chdir(path)
@@ -71,9 +74,12 @@ def retrieve(all_notes, less, title, note, notebook, path):
         results = target_nb.retrieve_by_title(title=title)
         for item in results:
             click.echo()
-            click.echo('Title: ' + item[0])
-            click.echo('Note: ' + item[1])
-            click.echo('Time: ' + item[2])
+            click.echo("Title: ", nl=False)
+            click.secho(item[0], bold=True)
+            click.echo("Note: ", nl=False)
+            click.secho(item[1], bold=True)
+            click.echo("Time: ", nl=False)
+            click.secho(item[2], bold=True)
 
     elif note:
         os.chdir(path)
@@ -82,9 +88,12 @@ def retrieve(all_notes, less, title, note, notebook, path):
 
         for item in results:
             click.echo()
-            click.echo('Title: ' + item[0])
-            click.echo('Note: ' + item[1])
-            click.echo('Time: ' + item[2])
+            click.echo("Title: ", nl=False)
+            click.secho(item[0], bold=True)
+            click.echo("Note: ", nl=False)
+            click.secho(item[1], bold=True)
+            click.echo("Time: ", nl=False)
+            click.secho(item[2], bold=True)
 
     else:
         raise click.UsageError('Missing necessary retrieval option')

@@ -209,7 +209,6 @@ class Note:
     def set_title(self, title):
         """
             Prompts the user for the title
-            :param note: Note object
             :param title: The title parameter
             """
 

@@ -5,6 +5,5 @@
 
 (edit_note)
 
-    1. Migrate code from edit.py
-    2. Implement an interactive menu for the cases where multiple notes
+    1. Implement an interactive menu for the cases where multiple notes
        have the same title
