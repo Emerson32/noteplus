@@ -22,7 +22,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               type=str, default='notes.db',
               show_default=True,
               help='Specify the name of a notebook')
-@click.option('-n', '--note', 'note', nargs=2,
+@click.option('-n', '--note', 'note', multiple=True,
               type=str, default='',
               help='Add a new note entry')
 @click.option('-p', '--path', 'path',
@@ -40,6 +40,10 @@ def add(editor, subject, notebook, note, path):
         os.chdir(path)
 
     if subject and note:
+
+        # Confine note params to two
+        if len(note) > 2:
+            raise click.UsageError("To many arguments for the following option: -n")
         # Create the folder with the given path.
         # The path is the current directory by default.
         new_dir = Subject(path=path, name=subject)
@@ -55,7 +59,12 @@ def add(editor, subject, notebook, note, path):
 
         new_note = Note(title='', text='', path=file_path)
         new_note.set_title(title=note[0])
-        new_note.set_text(editor=editor, text=note[1])
+
+        # If the user did not provide note_text via cmd
+        if len(note) == 1:
+            new_note.set_text(editor=editor, text='')
+        else:
+            new_note.set_text(editor=editor, text=note[1])
 
         # Must change to the desired directory before initialization
         os.chdir(file_path)
@@ -75,7 +84,12 @@ def add(editor, subject, notebook, note, path):
 
         new_note = Note(title='', text='', path=path)
         new_note.set_title(title=note[0])
-        new_note.set_text(editor=editor, text=note[1])
+
+        # If the user does not provide note text via cmd
+        if len(note) == 1:
+            new_note.set_text(editor=editor, text='')
+        else:
+            new_note.set_text(editor=editor, text=note[1])
 
         note_book.add(new_note)
 
