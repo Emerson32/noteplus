@@ -27,11 +27,10 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               help='Desired directory to change to before rename')
 def rename(note, notebook, subject, path):
     """Change the title of a note, notebook, or subject"""
-    if path:
-        if os.path.exists(path):
-            os.chdir(path)
-        else:
-            raise click.UsageError("No such directory")
+    if os.path.exists(path):
+        os.chdir(path)
+    else:
+        raise click.UsageError("No such directory")
 
     if subject:
         os.renames(subject[0], subject[1])
@@ -49,7 +48,7 @@ def rename(note, notebook, subject, path):
             click.echo("Renamed ", nl=False)
             click.secho(note[1], bold=True, fg='white', nl=False)
             click.echo(" to ", nl=False)
-            click.secho(note[2], bold=True, fg='green')
+            click.secho(note[2], bold=True)
         else:
             raise click.UsageError("No note with that title")
 
