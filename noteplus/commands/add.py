@@ -72,12 +72,7 @@ def add(subject, notebook, note, path):
 
         new_note = Note(title=note[0], text=note[1], path=path)
         note_book.add(new_note)
-
         click.secho(new_note.to_string(), fg='green')
-
-    elif notebook:
-        note_book = NoteBook(path=path, file_name=notebook)
-        click.secho(note_book.to_string(), fg='green')
 
     else:
         raise click.UsageError('Missing option')
