@@ -13,24 +13,22 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 @click.command('add', context_settings=CONTEXT_SETTINGS,
                short_help='Add notes and/or folders')
-@click.option('-e', '--editor', 'editor', is_flag=True,
-              type=bool, help='Use buffer to enter note')
 @click.option('-s', '--subject', 'subject', nargs=1,
               type=click.Path(writable=True),
               help='Create a new subject')
-@click.option('-nb', '--notebook', 'notebook', nargs=1,
+@click.option('-nb', '--notebook', 'notebook',
               type=str, default='notes.db',
               show_default=True,
               help='Specify the name of a notebook')
-@click.option('-n', '--note', 'note', multiple=True,
-              type=str, default='',
-              help='Add a new note entry')
+@click.option('-n', '--note', 'note', nargs=2,
+              type=str, default=None,
+              help='Add a new note entry [args: (title, text)]')
 @click.option('-p', '--path', 'path',
               type=click.Path(writable=True),
               default=lambda: os.environ.get('PWD', ''),
               show_default='current directory',
               help='Specific path to insert notes file')
-def add(editor, subject, notebook, note, path):
+def add(subject, notebook, note, path):
     """Add a new note to the notebook"""
     # First handle the provided path
     if not os.path.exists(path):
@@ -41,9 +39,6 @@ def add(editor, subject, notebook, note, path):
 
     if subject and note:
 
-        # Confine note params to two
-        if len(note) > 2:
-            raise click.UsageError("To many arguments for the following option: -n")
         # Create the folder with the given path.
         # The path is the current directory by default.
         new_dir = Subject(path=path, name=subject)
@@ -57,14 +52,7 @@ def add(editor, subject, notebook, note, path):
         if not os.path.exists(file_path):
             raise click.UsageError('No such file or directory')
 
-        new_note = Note(title='', text='', path=file_path)
-        new_note.set_title(title=note[0])
-
-        # If the user did not provide note_text via cmd
-        if len(note) == 1:
-            new_note.set_text(editor=editor, text='')
-        else:
-            new_note.set_text(editor=editor, text=note[1])
+        new_note = Note(title=note[0], text=note[1], path=file_path)
 
         # Must change to the desired directory before initialization
         os.chdir(file_path)
@@ -82,18 +70,14 @@ def add(editor, subject, notebook, note, path):
 
         note_book = NoteBook(path=path, file_name=notebook)
 
-        new_note = Note(title='', text='', path=path)
-        new_note.set_title(title=note[0])
-
-        # If the user does not provide note text via cmd
-        if len(note) == 1:
-            new_note.set_text(editor=editor, text='')
-        else:
-            new_note.set_text(editor=editor, text=note[1])
-
+        new_note = Note(title=note[0], text=note[1], path=path)
         note_book.add(new_note)
 
         click.secho(new_note.to_string(), fg='green')
+
+    elif notebook:
+        note_book = NoteBook(path=path, file_name=notebook)
+        click.secho(note_book.to_string(), fg='green')
 
     else:
         raise click.UsageError('Missing option')
