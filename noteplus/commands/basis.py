@@ -12,7 +12,7 @@ from prompt_toolkit.contrib.completers import WordCompleter
 
 class NoteBook:
     """Class representing note database"""
-    def __init__(self, path, file_name):
+    def __init__(self, path, file_name='notes.db'):
         self.path = os.path.abspath(path)
         self.dbfilename = file_name
 
@@ -132,7 +132,11 @@ class NoteBook:
         results = c.fetchall()
         return results
 
-    def rename(self, old_title, new_title):
+    def rename(self, new_filename):
+        os.rename(self.dbfilename, new_filename)
+        self.dbfilename = new_filename
+
+    def rename_note(self, old_title, new_title):
         conn = sqlite3.connect(self.dbfilename)
         c = conn.cursor()
 
