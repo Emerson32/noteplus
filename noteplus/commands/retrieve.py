@@ -32,9 +32,9 @@ def retrieve(all_notes, less, title, note, notebook, path):
     """Retrieve a note from the notebook"""
 
     if not os.path.isfile(os.path.join(path, notebook)):
-        raise click.UsageError('Notes file named: '
-                               + notebook + ' does not exist'
-                               + ' within the provided path')
+        raise click.UsageError("Notes file named "
+                               + "\'" + notebook + "\', does not exist"
+                               + " within the provided path")
 
     if not os.path.exists(path):
         raise click.UsageError('No such file or directory')

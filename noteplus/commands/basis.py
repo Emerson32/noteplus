@@ -123,8 +123,8 @@ class NoteBook:
         c = conn.cursor()
 
         with conn:
-            c.execute('Select * FROM notes WHERE note=:note',
-                      {'note': note})
+            c.execute('Select * FROM notes WHERE note_entry=:note_entry',
+                      {'note_entry': note})
 
         results = c.fetchall()
         return results
@@ -180,7 +180,7 @@ class NoteBook:
                 new_txt = target_note[1]
 
             with conn:
-                c.execute('''UPDATE notes set note=?
+                c.execute('''UPDATE notes set note_entry=?
                            WHERE title=?''',
                           (new_txt, note_title))
 
