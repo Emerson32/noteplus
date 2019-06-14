@@ -9,7 +9,7 @@ import sqlite3
 
 class NoteBook:
     """Class representing note database"""
-    def __init__(self, path, file_name='notes.db'):
+    def __init__(self, path, file_name):
         self.path = os.path.abspath(path)
         self.dbfilename = file_name
 
@@ -30,14 +30,24 @@ class NoteBook:
         c = conn.cursor()
 
         with conn:
-            c.execute("INSERT INTO notes VALUES(:title, :note_entry, :time_stamp)",
-                      {'title': note.get_title(), 'note_entry': note.get_text(),
-                       'time_stamp': note.get_timestamp()})
+            c.execute("SELECT * from notes WHERE title=:title",
+                      {'title': note.title})
+
+            found = c.fetchall()
+
+            if not found:
+                c.execute("INSERT INTO notes VALUES(:title, :note_entry, :time_stamp)",
+                          {'title': note.get_title(), 'note_entry': note.get_text(),
+                           'time_stamp': note.get_timestamp()})
+                click.secho(note.to_string(), fg='green')
+
+            else:
+                raise click.UsageError("Cannot create duplicate notes within a notebook")
 
     def clean_notes(self):
 
         if not os.path.isfile(self.dbfilename):
-            raise click.UsageError('Notes file non-existent')
+            raise click.UsageError('Notes file does not exist')
 
         conn = sqlite3.connect(self.dbfilename)
         c = conn.cursor()
@@ -47,11 +57,15 @@ class NoteBook:
             removed = c.fetchall()
             c.execute('DELETE from notes')
 
-        return removed
+        click.echo()
+        for item in removed:
+            click.secho("Removed: ", bold=True, nl=False)
+            click.secho(item[0], fg='red', underline=True)
 
+    # TODO: Make it remove all notebook files in the cwd
     def purge_notes(self):
         if not os.path.isfile(self.dbfilename):
-            raise click.UsageError('Notes file non-existent')
+            raise click.UsageError('Notes file does not exist')
 
         conn = sqlite3.connect(self.dbfilename)
         c = conn.cursor()
@@ -64,6 +78,19 @@ class NoteBook:
         os.remove(self.dbfilename)
 
         return removed
+
+    def remove(self):
+        """Remove """
+        if not os.path.isfile(self.dbfilename):
+            raise click.UsageError("Notes file does not exist")
+
+        # Reminder: It is unnecessary to check a 'path'
+        # as the program execution will already be in the proper directory
+        os.remove(self.dbfilename)
+
+        click.secho("Removed: ", bold=True, nl=False)
+        click.secho(self.dbfilename, fg='red', underline=True)
+        click.echo()
 
     def remove_note(self, title):
         """
@@ -85,16 +112,16 @@ class NoteBook:
                       {'title': title})
             removed = c.fetchall()
 
-            if len(removed) == 0:
+            if not removed:
                 raise click.UsageError('No such note with that title')
-            elif len(removed) > 1:
-                # Present user with menu to choose a note
-                pass
+
             else:
                 c.execute('DELETE from notes WHERE title=:title',
                           {'title': title})
 
-        return removed
+        click.secho("Removed: ", bold=True, nl=False)
+        click.secho(removed, fg='red', underline=True)
+        click.echo()
 
     def retrieve_all(self):
 
@@ -143,13 +170,11 @@ class NoteBook:
 
             results = c.fetchall()
 
-        if len(results) == 0:
+        if not results:
             raise click.UsageError('No such note with that title')
-        elif len(results) > 1:
-            # Present user with menu to choose a note
-            pass
+
         else:
-            # Update one entry with the new title
+            # Update the entry with the new title
             with conn:
                 c.execute('''UPDATE notes set title= ?
                           WHERE title= ? ''',
@@ -166,11 +191,9 @@ class NoteBook:
 
         results = c.fetchall()
 
-        if len(results) == 0:
+        if not results:
             raise click.UsageError('No such note with that title')
-        elif len(results) > 1:
-            # Present user with menu to choose a note
-            pass
+
         else:
             target_note = results[0]
             new_txt = click.edit(target_note[1])

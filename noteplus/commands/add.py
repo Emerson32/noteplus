@@ -34,6 +34,10 @@ def add(subject, notebook, note, path):
     if not os.path.exists(path):
         raise click.UsageError('No such file or directory')
 
+    # # Do not allow multiple notebook files to have the same name
+    # if os.path.isfile(notebook):
+    #     raise click.UsageError('File already exists')
+
     else:
         os.chdir(path)
 
@@ -52,11 +56,10 @@ def add(subject, notebook, note, path):
         if not os.path.exists(file_path):
             raise click.UsageError('No such file or directory')
 
-        new_note = Note(title=note[0], text=note[1], path=file_path)
-
         # Must change to the desired directory before initialization
         os.chdir(file_path)
 
+        new_note = Note(title=note[0], text=note[1], path=file_path)
         note_book = NoteBook(path=file_path, file_name=notebook)
         note_book.add(new_note)
 
@@ -72,7 +75,6 @@ def add(subject, notebook, note, path):
 
         new_note = Note(title=note[0], text=note[1], path=path)
         note_book.add(new_note)
-        click.secho(new_note.to_string(), fg='green')
 
     else:
         raise click.UsageError('Missing option')
