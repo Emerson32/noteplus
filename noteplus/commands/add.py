@@ -17,7 +17,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               type=click.Path(writable=True),
               help='Create a new subject')
 @click.option('-nb', '--notebook', 'notebook',
-              type=str, default='notes.db',
+              type=str, default='notes.nbdb',
               show_default=True,
               help='Specify the name of a notebook')
 @click.option('-n', '--note', 'note', nargs=2,
@@ -33,10 +33,6 @@ def add(subject, notebook, note, path):
     # First handle the provided path
     if not os.path.exists(path):
         raise click.UsageError('No such file or directory')
-
-    # # Do not allow multiple notebook files to have the same name
-    # if os.path.isfile(notebook):
-    #     raise click.UsageError('File already exists')
 
     else:
         os.chdir(path)

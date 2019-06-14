@@ -13,7 +13,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               nargs=1, type=str,
               help='edit the text of a given note entry (arg = title)')
 @click.option('-nb', '--notebook', 'notebook', nargs=1,
-              type=str, default='notes.db',
+              type=str, default='notes.nbdb',
               show_default=True,
               help='Name of notes file to edit')
 @click.option('-p', '--path', 'path', nargs=1,

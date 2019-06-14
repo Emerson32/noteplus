@@ -20,7 +20,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-n', '--note', 'note', nargs=1, type=str,
               help='retrieve a note based on the note')
 @click.option('-nb', '--notebook', 'notebook', nargs=1,
-              type=str, default='notes.db',
+              type=str, default='notes.nbdb',
               show_default=True,
               help='Name of notebook file')
 @click.option('-p', '--path', 'path', nargs=1,
