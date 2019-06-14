@@ -66,6 +66,7 @@ class NoteBook:
         for item in removed:
             click.secho("Removed: ", bold=True, nl=False)
             click.secho(item[0], fg='red', underline=True)
+        click.echo()
 
     def remove(self):
         """Remove """
@@ -78,7 +79,6 @@ class NoteBook:
 
         click.secho("Removed: ", bold=True, nl=False)
         click.secho(self.dbfilename, fg='red', underline=True)
-        click.echo()
 
     def remove_note(self, title):
         """
@@ -188,7 +188,7 @@ class NoteBook:
 
             # Text remains unchanged if user makes no changes
             if not new_txt:
-                new_txt = target_note[1]
+                new_txt = target_note[1].rstrip()
 
             with conn:
                 c.execute('''UPDATE notes set note_entry=?

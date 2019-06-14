@@ -13,10 +13,6 @@ from noteplus.commands.remove import remove
 from noteplus.commands.rename import rename
 from noteplus.commands.retrieve import retrieve
 
-
-from noteplus.interactive import NotePlusApp
-
-
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
@@ -39,7 +35,7 @@ def main(banner, interactive):
         click.echo(b.renderText('noteplus'))
 
     if interactive:
-        NotePlusApp().run()
+        pass
 
 
 main.add_command(add)

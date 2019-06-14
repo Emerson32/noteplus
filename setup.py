@@ -9,7 +9,6 @@ setup(
         'prompt_toolkit',
         'PyInquirer',
         'pyfiglet',
-        'npyscreen'
     ],
     entry_points={
         'console_scripts': [

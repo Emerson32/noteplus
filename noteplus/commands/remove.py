@@ -22,7 +22,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-n', '--note', 'note', nargs=1,
               help='remove a note')
 @click.option('-nb', '--notebook', 'notebook',
-              nargs=1, type=str, default='notes.nbdb',
+              nargs=1, type=str, default='',
               help='Specify the name of the notebook file')
 @click.option('--path', 'path', nargs=1,
               type=click.Path(writable=True),
@@ -37,6 +37,7 @@ def remove(clean, purge, subject, note, notebook, path):
     else:
         raise click.UsageError("No such file or directory")
 
+
     if subject:
         subject_name = os.path.basename(subject.rstrip('/'))
         abs_path = os.path.join(os.getcwd(), subject)
@@ -47,14 +48,14 @@ def remove(clean, purge, subject, note, notebook, path):
     elif note:
         # Invalid file for removal operation
         if '.nbdb' not in notebook:
-            raise click.UsageError("NoteBook named \'" + notebook + "\' cannot be removed")
+            raise click.UsageError("NoteBook not found")
 
         note_book = NoteBook(path=path, file_name=notebook)
         note_book.remove_note(note)
 
     elif clean:
         if '.nbdb' not in notebook:
-            raise click.UsageError("NoteBook named \'" + notebook + "\' cannot be removed")
+            raise click.UsageError("NoteBook not found")
 
         note_book = NoteBook(path=path, file_name=notebook)
         if click.confirm('\nRemove all notes in the provided notebook?'):
@@ -64,17 +65,21 @@ def remove(clean, purge, subject, note, notebook, path):
     elif purge:
         if click.confirm('\nRemove all notebooks in the current subject?'):
 
+            click.echo()
             for file in os.listdir(path):
                 if file.endswith('.nbdb'):
                     note_book = NoteBook(path=path, file_name=file)
                     note_book.remove()
+            click.echo()
 
     elif notebook:
         if '.nbdb' not in notebook:
-            raise click.UsageError("NoteBook named \'" + notebook + "\' cannot be removed")
+            raise click.UsageError("NoteBook not found")
 
         note_book = NoteBook(path=path, file_name=notebook)
+        click.echo()
         note_book.remove()
+        click.echo()
 
     else:
         raise click.BadOptionUsage('Missing option')

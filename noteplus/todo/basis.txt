@@ -1,9 +1,1 @@
-(remove_note)
 
-    1. Implement an interactive menu for the cases where multiple notes
-       have the same title
-
-(edit_note)
-
-    1. Implement an interactive menu for the cases where multiple notes
-       have the same title
