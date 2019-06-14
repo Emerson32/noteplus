@@ -45,15 +45,16 @@ def remove(clean, purge, subject, note, notebook, path):
         click.echo("Removed: " + removed_subject)
 
     elif note:
-        if not os.path.isfile(notebook):
-            raise click.UsageError("NoteBook named \'" + notebook + "\' does not exist")
+        # Invalid file for removal operation
+        if '.nbdb' not in notebook:
+            raise click.UsageError("NoteBook named \'" + notebook + "\' cannot be removed")
 
         note_book = NoteBook(path=path, file_name=notebook)
         note_book.remove_note(note)
 
     elif clean:
-        if not os.path.isfile(notebook):
-            raise click.UsageError("NoteBook named \'" + notebook + "\' does not exist")
+        if '.nbdb' not in notebook:
+            raise click.UsageError("NoteBook named \'" + notebook + "\' cannot be removed")
 
         note_book = NoteBook(path=path, file_name=notebook)
         if click.confirm('\nRemove all notes in the provided notebook?'):
@@ -69,8 +70,8 @@ def remove(clean, purge, subject, note, notebook, path):
                     note_book.remove()
 
     elif notebook:
-        if not os.path.isfile(notebook):
-            raise click.UsageError("NoteBook named \'" + notebook + "\' does not exist")
+        if '.nbdb' not in notebook:
+            raise click.UsageError("NoteBook named \'" + notebook + "\' cannot be removed")
 
         note_book = NoteBook(path=path, file_name=notebook)
         note_book.remove()
