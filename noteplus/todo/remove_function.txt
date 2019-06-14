@@ -1,6 +1,0 @@
-1.  Implement an interactive menu for the cases when multiple notes
-    have the same title
-
-2.  Add Usage Error when no args or options are provided
-
-3.  Style echo statements
