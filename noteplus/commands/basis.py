@@ -3,6 +3,7 @@
 import click
 import datetime
 import os
+import re
 import shutil
 import sqlite3
 
@@ -227,6 +228,10 @@ class Subject:
     """Folder class"""
     def __init__(self, path, name):
         self.path = path
+
+        if re.search(r'.*', name):
+            raise click.UsageError("A subject cannot contain a file extension")
+
         self.name = name
 
     def create(self):
