@@ -14,17 +14,17 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
                short_help='remove a note')
 @click.option('-c', '--clean', 'clean', is_flag=True,
               help='remove all notes (preserves database file)')
-@click.option('-p', '--purge', 'purge', is_flag=True,
-              help='remove all notes (removes database file)')
+@click.option('--purge', 'purge', is_flag=True,
+              help='remove all notebooks (removes database file)')
 @click.option('-s', '--subject', 'subject',
               nargs=1, type=click.Path(writable=True),
               help='remove a folder')
 @click.option('-n', '--note', 'note', nargs=1,
               help='remove a note')
 @click.option('-nb', '--notebook', 'notebook',
-              nargs=1, type=str, default='notes.db',
+              nargs=1, type=str, default='notes.nbdb',
               help='Specify the name of the notebook file')
-@click.option('-p', '--path', 'path', nargs=1,
+@click.option('--path', 'path', nargs=1,
               type=click.Path(writable=True),
               default=lambda: os.environ.get('PWD', ''),
               show_default='current directory',
@@ -34,7 +34,6 @@ def remove(clean, purge, subject, note, notebook, path):
 
     if os.path.exists(path):
         os.chdir(path)
-        note_book = NoteBook(path=path, file_name=notebook)
     else:
         raise click.UsageError("No such file or directory")
 
@@ -46,18 +45,34 @@ def remove(clean, purge, subject, note, notebook, path):
         click.echo("Removed: " + removed_subject)
 
     elif note:
+        if not os.path.isfile(notebook):
+            raise click.UsageError("NoteBook named \'" + notebook + "\' does not exist")
+
+        note_book = NoteBook(path=path, file_name=notebook)
         note_book.remove_note(note)
 
     elif clean:
+        if not os.path.isfile(notebook):
+            raise click.UsageError("NoteBook named \'" + notebook + "\' does not exist")
+
+        note_book = NoteBook(path=path, file_name=notebook)
         if click.confirm('\nRemove all notes in the provided notebook?'):
             note_book.clean_notes()
 
-    # TODO: Make the purge option remove all notebook files exclusively
+    # Only removes .nbdb files
     elif purge:
         if click.confirm('\nRemove all notebooks in the current subject?'):
-            note_book.purge_notes()
+
+            for file in os.listdir(path):
+                if file.endswith('.nbdb'):
+                    note_book = NoteBook(path=path, file_name=file)
+                    note_book.remove()
 
     elif notebook:
+        if not os.path.isfile(notebook):
+            raise click.UsageError("NoteBook named \'" + notebook + "\' does not exist")
+
+        note_book = NoteBook(path=path, file_name=notebook)
         note_book.remove()
 
     else:

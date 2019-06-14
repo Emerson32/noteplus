@@ -11,7 +11,11 @@ class NoteBook:
     """Class representing note database"""
     def __init__(self, path, file_name):
         self.path = os.path.abspath(path)
-        self.dbfilename = file_name
+
+        if '.nbdb' in file_name:
+            self.dbfilename = file_name
+        else:
+            self.dbfilename = file_name + '.nbdb'
 
         conn = sqlite3.connect(self.dbfilename)
         c = conn.cursor()
@@ -61,23 +65,6 @@ class NoteBook:
         for item in removed:
             click.secho("Removed: ", bold=True, nl=False)
             click.secho(item[0], fg='red', underline=True)
-
-    # TODO: Make it remove all notebook files in the cwd
-    def purge_notes(self):
-        if not os.path.isfile(self.dbfilename):
-            raise click.UsageError('Notes file does not exist')
-
-        conn = sqlite3.connect(self.dbfilename)
-        c = conn.cursor()
-
-        c.execute('SELECT * from notes')
-        removed = c.fetchall()
-
-        click.secho("Removed: ", bold=True, fg='magenta', nl=False)
-        click.secho((os.path.join(os.getcwd(), self.dbfilename)), underline=True)
-        os.remove(self.dbfilename)
-
-        return removed
 
     def remove(self):
         """Remove """
