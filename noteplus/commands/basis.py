@@ -11,6 +11,12 @@ import sqlite3
 class NoteBook:
     """Class representing note database"""
     def __init__(self, path, file_name):
+        abs_path = os.path.abspath(path)
+
+        if not os.path.exists(abs_path):
+            raise click.UsageError("The provided path named "
+                                   + "\'" + abs_path + "\' does not exist")
+
         self.path = os.path.abspath(path)
 
         if '.nbdb' in file_name:
