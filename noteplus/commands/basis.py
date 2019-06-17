@@ -8,6 +8,19 @@ import shutil
 import sqlite3
 
 
+def note_exists(title, nb_title):
+    conn = sqlite3.connect(nb_title)
+    c = conn.cursor()
+
+    with conn:
+        c.execute('SELECT * FROM notes WHERE title=:title',
+                  {'title': title})
+
+    results = c.fetchall()
+
+    return True if results else False
+
+
 class NoteBook:
     """Class representing note database"""
     def __init__(self, path, file_name):
@@ -36,17 +49,11 @@ class NoteBook:
             conn.commit()
 
     def add(self, note):
-        # Open connection to the notes database
         conn = sqlite3.connect(self.dbfilename)
         c = conn.cursor()
 
         with conn:
-            c.execute("SELECT * from notes WHERE title=:title",
-                      {'title': note.title})
-
-            found = c.fetchall()
-
-            if not found:
+            if not note_exists(note.title, self.dbfilename):
                 c.execute("INSERT INTO notes VALUES(:title, :note_entry, :time_stamp)",
                           {'title': note.get_title(), 'note_entry': note.get_text(),
                            'time_stamp': note.get_timestamp()})
