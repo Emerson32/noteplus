@@ -20,9 +20,10 @@ def interactive_handler():
             note_book = NoteBook(path=nb_path, file_name=nb_title)
 
         elif response == 'Make a Note':
-            note_title, note_path, note_book = note_menu()
+            note_book, note_title, note_text, note_path = note_menu()
 
-            # subprocess.call(['noteplus add', '-nb', note_book, '-n', note_title, note_text, note_path])
+            subprocess.call(['noteplus', 'add', '-nb', note_book, '-n',
+                             note_title, note_text, '-p', note_path])
     except KeyError:
         pass
 
@@ -79,6 +80,7 @@ def start():
     main_menu = [
             {
                 'type': 'list',
+                'qmark': '[+]',
                 'name': 'selection',
                 'message': 'What do you want to do?',
                 'choices': [
@@ -133,7 +135,6 @@ def notebook_menu():
     return title, dest
 
 
-# TODO: Add a note_text prompt
 def note_menu():
 
     note_title = [
@@ -181,11 +182,6 @@ def note_menu():
     # May need to loop process
     while True:
         click.echo()
-        title_field = prompt(note_title, keyboard_interrupt_msg='Aborted!')
-        title_field = title_field['title']
-
-        text_field =
-
         dest = prompt(note_path, keyboard_interrupt_msg='Aborted!')
         dest = dest['path']
 
@@ -204,15 +200,23 @@ def note_menu():
             again = again['restart']
             if again:
                 continue
-            else:
-                break
+
         # Ask for notebook
         else:
             note_book = prompt(notebook_select, keyboard_interrupt_msg='Aborted!')
             note_book = note_book['notebook']
             break
 
-    return title_field, dest, note_book
+    title_field = prompt(note_title, keyboard_interrupt_msg='Aborted!')
+    title_field = title_field['title']
+
+    # Edit the note of the text in default editor
+    text_field = click.edit()
+
+    if not text_field:
+        text_field = 'Empty Note'
+
+    return note_book, title_field, text_field, dest
 
 
 
