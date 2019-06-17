@@ -1,3 +1,4 @@
+import click
 import subprocess
 import os
 
@@ -19,7 +20,9 @@ def interactive_handler():
             note_book = NoteBook(path=nb_path, file_name=nb_title)
 
         elif response == 'Make a Note':
-            note_menu()
+            note_title, note_path, note_book = note_menu()
+
+            # subprocess.call(['noteplus add', '-nb', note_book, '-n', note_title, note_text, note_path])
     except KeyError:
         pass
 
@@ -34,17 +37,42 @@ class TitleValidator(Validator):
                 cursor_position=len(document.text))
 
 
-def get_path(home_dir):
+class PathValidator(Validator):
+    def validate(self, document):
+
+        if not os.path.exists(document.text):
+            raise ValidationError(
+                message='Path does not exist',
+                cursor_position=len(document.text))
+
+
+def get_path():
+
+    default_path = str(Path.home())
+
     path_input = [
         {
             'type': 'input',
             'name': 'path',
             'message': 'Enter the desired path',
-            'default': home_dir,
+            'default': default_path,
+            'validate': PathValidator
         }
     ]
-    dest = prompt(path_input)
-    return dest['path']
+
+    dest = prompt(path_input, keyboard_interrupt_msg='Aborted!')
+    dest = dest['path']
+    return dest
+
+
+def list_notebooks():
+    notebook_list = []
+
+    for file in os.listdir(os.getcwd()):
+        if file.endswith('.nbdb'):
+            notebook_list.append(file.rstrip('.nbdb'))
+
+    return notebook_list
 
 
 def start():
@@ -63,7 +91,7 @@ def start():
                 ]
             }
     ]
-    choice = prompt(main_menu)
+    choice = prompt(main_menu, keyboard_interrupt_msg='Aborted!')
     return choice['selection']
 
 
@@ -90,48 +118,101 @@ def notebook_menu():
             }
     ]
 
-    title = prompt(nb_title)
+    title = prompt(nb_title, keyboard_interrupt_msg='Aborted!')
     title = title['nb_title']
 
-    dest = prompt(nb_path)
+    dest = prompt(nb_path, keyboard_interrupt_msg='Aborted!')
     dest = dest['path']
 
     if dest == 'Current Directory':
         dest = os.getcwd()
 
     else:
-        home = str(Path.home())
-        dest = get_path(home_dir=home)
+        dest = get_path()
 
     return title, dest
 
 
-# def note_menu():
-#     note_title = [
-#         {
-#             'type': 'input',
-#             'name': 'title',
-#             'message': 'Title of the note:',
-#             'validate': TitleValidator
-#         }
-#     ]
-#
-#     note_path = [
-#         {
-#             'type': 'list',
-#             'name': 'path',
-#             'message': 'Where should the note be stored?',
-#             'choices': [
-#                 Separator('= Specify NoteBook location ='),
-#                 'Current Directory',
-#                 'Other Location'
-#             ]
-#         }
-#     ]
-#
-#     notebook_select = [
-#     ]
-#
-#     title_field = prompt(note_title)
-#     title_field = title_field['title']
+# TODO: Add a note_text prompt
+def note_menu():
+
+    note_title = [
+        {
+            'type': 'input',
+            'name': 'title',
+            'message': 'Title of the note:',
+            'validate': TitleValidator
+        }
+    ]
+
+    note_path = [
+        {
+            'type': 'list',
+            'name': 'path',
+            'message': 'Where should the note be stored?',
+            'choices': [
+                Separator('= Note Location ='),
+                'Current Directory',
+                'Other Location'
+            ]
+        }
+    ]
+
+    restart = [
+        {
+            'type': 'confirm',
+            'name': 'restart',
+            'message': 'No notebooks found in the give path. Try again?'
+        }
+    ]
+
+    notebook_select = [
+        {
+            'type': 'list',
+            'name': 'notebook',
+            'message': 'Which notebook would you like to use?',
+            'choices': list_notebooks()
+        }
+    ]
+
+    # Set default notebook to notes.nbdb
+    note_book = 'notes.nbdb'
+
+    # May need to loop process
+    while True:
+        click.echo()
+        title_field = prompt(note_title, keyboard_interrupt_msg='Aborted!')
+        title_field = title_field['title']
+
+        text_field =
+
+        dest = prompt(note_path, keyboard_interrupt_msg='Aborted!')
+        dest = dest['path']
+
+        if dest == 'Current Directory':
+            dest = os.getcwd()
+        else:
+            dest = get_path()
+
+        os.chdir(path=dest)
+
+        notebooks = list_notebooks()
+
+        # No notebooks in the specified path
+        if len(notebooks) == 0:
+            again = prompt(restart, keyboard_interrupt_msg='Aborted!')
+            again = again['restart']
+            if again:
+                continue
+            else:
+                break
+        # Ask for notebook
+        else:
+            note_book = prompt(notebook_select, keyboard_interrupt_msg='Aborted!')
+            note_book = note_book['notebook']
+            break
+
+    return title_field, dest, note_book
+
+
 
