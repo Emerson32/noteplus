@@ -242,7 +242,7 @@ class Subject:
     def __init__(self, path, name):
         self.path = path
 
-        if re.search(r'.*', name):
+        if re.search(r'\.\w*', name):
             raise click.UsageError("A subject cannot contain a file extension")
 
         self.name = name

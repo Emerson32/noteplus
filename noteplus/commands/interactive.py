@@ -11,6 +11,7 @@ from PyInquirer import Validator, ValidationError
 
 from noteplus.commands.basis import NoteBook, note_exists
 
+# Global variable to keep track of the current notebook being edited 
 curr_nb = None
 
 
@@ -21,17 +22,27 @@ def interactive_handler():
             nb_title, nb_path = notebook_menu()
 
             # Initialize a new notebook
-            note_book = NoteBook(path=nb_path, file_name=nb_title)
+            NoteBook(path=nb_path, file_name=nb_title)
 
         elif response == 'Make a Note':
             while not curr_nb:
-                note_path = get_note_path()
+                note_path = get_path()
                 note_book = select_notebook()
 
             note_title, note_text = get_note_info()
 
             subprocess.call(['noteplus', 'add', '-nb', note_book, '-n',
                              note_title, note_text, '-p', note_path])
+
+        elif response == 'Create a new Subject Folder':
+            path, title = subject_menu()
+
+            subprocess.call(['noteplus', 'add', '-s', title, '-p', path])
+
+        elif response == 'Delete a Subject Folder':
+            path, title = subject_menu()
+            subprocess.call('noteplus', 'remove', '-s', title, '-p', path)
+
     except KeyError:
         pass
 
@@ -71,16 +82,57 @@ def get_path():
     path_input = [
         {
             'type': 'input',
+            'qmark': '[+]',
             'name': 'path',
-            'message': 'Enter the desired path',
+            'message': 'Enter the desired path: ',
             'default': default_path,
             'validate': PathValidator
         }
     ]
 
-    dest = prompt(path_input, keyboard_interrupt_msg='Aborted!')
+    path_select = [
+        {
+            'type': 'list',
+            'qmark': '[+]',
+            'name': 'path',
+            'message': 'Specify Location',
+            'choices': [
+                Separator('= Note Location ='),
+                'Current Directory',
+                'Other Location'
+            ]
+        }
+    ]
+
+    click.echo()
+    dest = prompt(path_select, keyboard_interrupt_msg='Aborted!')
     dest = dest['path']
+
+    if dest == 'Current Directory':
+        dest = os.getcwd()
+    else:
+        dest = prompt(path_input, keyboard_interrupt_msg='Aborted!')
+        dest = dest['path']
+
+    os.chdir(path=dest)
     return dest
+
+
+def get_title(message, validator):
+    title_prompt = [
+        {
+            'type': 'input',
+            'qmark': '[+]',
+            'name': 'title',
+            'message': message,
+            'validate': validator
+        }
+    ]
+
+    title_field = prompt(title_prompt, keyboard_interrupt_msg='Aborted!')
+    title_field = title_field['title']
+
+    return title_field
 
 
 def list_notebooks():
@@ -115,55 +167,17 @@ def start():
 
 
 def notebook_menu():
-    nb_title = [
-        {
-            'type': 'input',
-            'name': 'nb_title',
-            'message': 'Notebook Title:',
-            'default': 'notebook',
-            'validate': TitleValidator
-        }
-    ]
-    nb_path = [
-            {
-                'type': 'list',
-                'name': 'path',
-                'message': 'Where should the notebook be stored?',
-                'choices': [
-                    Separator('= Notebook Location ='),
-                    'Current Directory',
-                    'Other Location'
-                ]
-            }
-    ]
 
-    title = prompt(nb_title, keyboard_interrupt_msg='Aborted!')
-    title = title['nb_title']
+    title_field = get_title(message='Notebook title:')
 
-    dest = prompt(nb_path, keyboard_interrupt_msg='Aborted!')
-    dest = dest['path']
+    dest = get_path()
 
-    if dest == 'Current Directory':
-        dest = os.getcwd()
-
-    else:
-        dest = get_path()
-
-    return title, dest
+    return title_field, dest
 
 
 def get_note_info():
-    note_title = [
-        {
-            'type': 'input',
-            'name': 'title',
-            'message': 'Title of the note:',
-            'validate': NoteValidator
-        }
-    ]
 
-    title_field = prompt(note_title, keyboard_interrupt_msg='Aborted!')
-    title_field = title_field['title']
+    title_field = get_title(message='Note title:', validator=NoteValidator)
 
     # Edit the note of the text in default editor
     text_field = click.edit()
@@ -176,39 +190,13 @@ def get_note_info():
     return title_field, text_field
 
 
-def get_note_path():
-    note_path = [
-        {
-            'type': 'list',
-            'name': 'path',
-            'message': 'Where should the note be stored?',
-            'choices': [
-                Separator('= Note Location ='),
-                'Current Directory',
-                'Other Location'
-            ]
-        }
-    ]
-
-    click.echo()
-    dest = prompt(note_path, keyboard_interrupt_msg='Aborted!')
-    dest = dest['path']
-
-    if dest == 'Current Directory':
-        dest = os.getcwd()
-    else:
-        dest = get_path()
-
-    os.chdir(path=dest)
-    return dest
-
-
 def select_notebook():
     notebook_select = [
         {
             'type': 'list',
+            'qmark': '[+]',
             'name': 'notebook',
-            'message': 'Which notebook would you like to use?',
+            'message': 'Select a notebook',
             'choices': list_notebooks()
         }
     ]
@@ -216,6 +204,7 @@ def select_notebook():
     restart = [
         {
             'type': 'confirm',
+            'qmark': '[?]',
             'name': 'restart',
             'message': 'No notebooks found in the give path. Try again?'
         }
@@ -247,6 +236,12 @@ def select_notebook():
 
     return note_book
 
+
+def subject_menu():
+    title_field = get_title('Subject title:', validator=TitleValidator)
+    dest = get_path()
+
+    return dest, title_field
 
 
 
