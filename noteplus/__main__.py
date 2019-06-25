@@ -5,7 +5,6 @@
 import click
 import sys
 
-from PyInquirer import prompt
 from pyfiglet import Figlet
 
 from noteplus.commands.add import add
